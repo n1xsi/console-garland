@@ -17,8 +17,7 @@ class Garland:
             "yellow": Fore.YELLOW,
             "blue": Fore.BLUE,
             "magenta": Fore.MAGENTA,
-            "cyan": Fore.CYAN,
-            "white": Fore.WHITE,
+            "cyan": Fore.CYAN
         }
 
         self.bulb = "●"
@@ -32,8 +31,9 @@ class Garland:
     def colorize_random(self) -> str:
         garland = "-"
         for _ in range(self.garland_length):
-            garland += f"{choice(list(self.colors.values()))}{self.bulb}{self.wire}"
-        self.garland = garland + f"{Style.RESET_ALL}"
+            garland += f"{choice(list(self.colors.values()))}{self.bulb}"  # Добавление цветной "лампочки"
+            garland += f"{Style.RESET_ALL}{self.wire}"                     # Добавление бесцветного "проводка"
+        self.garland = garland
 
 
 def clear_console():
