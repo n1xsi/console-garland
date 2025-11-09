@@ -1,2 +1,2 @@
-# console-garland
+# cli-console-garland
 Цветная гирлянда, реализованная в консоли Python.
