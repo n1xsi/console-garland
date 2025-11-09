@@ -26,11 +26,11 @@ class Garland:
         self.garland = "-" + f"{self.bulb}-"*self.garland_length
 
     def print_garland(self) -> None:
-        """Выводит гирлянду в консоль"""
+        """Выводит гирлянду в консоль."""
         print(f"\r{self.garland}", end="")
 
     def colorize_random(self):
-        """Рандомно раскрасшивает гирлянду"""
+        """Рандомно раскрасшивает гирлянду."""
         garland = "-"
         for _ in range(self.garland_length):
             # Добавление цветной "лампочки"
@@ -40,15 +40,15 @@ class Garland:
         self.garland = garland
 
     def _initialize_colors(self) -> list:
-        """
-        Генерирует последовательность цветов для гирлянды так,
-        чтобы два соседних цвета не повторялись.
-        """
-        pass
+        """Генерирует последовательность цветов без повторения соседних."""
+        colors = [choice(self.colors)]
+        for _ in range(self.garland_length - 1):
+            colors.append(choice([c for c in self.colors if c != colors[-1]]))
+        return colors
 
 
 def clear_console():
-    """Очищает консоль"""
+    """Очищает консоль."""
     os.system('cls||clear')
 
 
@@ -56,20 +56,23 @@ def main():
     """Главная функция, которая имитирует работу гирлянды."""
     clear_console()
     garland = Garland()
-
+    
     print("🎄 Гирлянда (ENTER - switch, Ctrl+C - exit)")
+    
     try:
         while True:
             garland.colorize_random()
             garland.print_garland()
             sleep(0.2)
+            
     except KeyboardInterrupt:
         print("\nГирлянда выключена!")
+        
     finally:
         print(Style.RESET_ALL)
 
 
 if __name__ == "__main__":
-    """Запуск программы"""
+    """Запуск программы."""
     init(autoreset=True)  # autoreset - чтобы не писать Style.RESET_ALL постоянно
     main()
