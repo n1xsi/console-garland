@@ -22,7 +22,8 @@ class Garland:
 
         self.current_mode_index = 0
         self.modes = [
-            self._mode_full_random
+            self._mode_full_random,
+            self._mode_full_on
         ]
 
     def _initialize_colors(self) -> list:
@@ -45,8 +46,11 @@ class Garland:
     
     def _mode_full_random(self) -> str:
         """Режим 1: Случайное раскрасшивание лампочек всеми цветами."""
-        colored_garland = [f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{choice(self.colors)}{self.bulb}" for i in range(self.garland_length)]  
-        return "".join(colored_garland)
+        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{choice(self.colors)}{self.bulb}" for i in range(self.garland_length)])
+    
+    def _mode_full_on(self) -> str:
+        """Режим 2: Все лампочки статично горят."""
+        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{self.bulb_colors[i//2]}{self.bulb}" for i in range(self.garland_length)])
 
 
 def clear_console():
