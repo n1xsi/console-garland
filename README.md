@@ -1,2 +1,7 @@
-# cli-console-garland
+# console-garland
+
+*in progress*
+
 Цветная гирлянда, реализованная в консоли Python.
+
+Имеется несколько режимов, переключение на "Enter"
