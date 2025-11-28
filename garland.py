@@ -48,17 +48,30 @@ class Garland:
     
     def _mode_full_random(self) -> str:
         """Режим 1: Случайное раскрасшивание лампочек всеми цветами."""
-        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{choice(self.colors)}{self.bulb_on}" for i in range(self.garland_length)])
+        garland_parts = []
+        for i in range(self.garland_length):
+            if i%2==0:
+                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
+            else:
+                garland_parts.append(f"{choice(self.colors)}{self.bulb_on}")
+        return "".join(garland_parts)
     
     def _mode_full_on(self) -> str:
         """Режим 2: Все лампочки статично горят."""
-        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{self.bulb_colors[i//2]}{self.bulb_on}" for i in range(self.garland_length)])
+        garland_parts = []
+        for i in range(self.garland_length):
+            if i%2==0:
+                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
+            else:
+                garland_parts.append(f"{self.bulb_colors[i//2]}{self.bulb_on}")
+        return "".join(garland_parts)
     
     def _mode_random_flicker(self) -> str:
         """Режим 3: Случайное мерцание лампочек."""
         garland_parts = []
         for i in range(self.garland_length):
-            if i%2==0: garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
+            if i%2==0:
+                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
             else:
                 # Каждая лампочка решает "зажечься" или нет случайным образом
                 if choice([True, False]):
@@ -69,8 +82,8 @@ class Garland:
 
 
 def clear_console():
-    """Очищает консоль."""
-    os.system('cls||clear')
+    """Очищает консоль в зависимости от ОС."""
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def main():
