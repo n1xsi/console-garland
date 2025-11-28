@@ -14,7 +14,8 @@ class Garland:
 
     def __init__(self, garland_length: int):
         self.garland_length = garland_length*2+1  # Добавляем провода между лампочками и по краям
-        self.bulb, self.wire = "●", "-"
+        self.bulb_on, self.bulb_off = "●", "○"
+        self.wire = "-"
         
         # Список цветов для лампочек (исключая определённые серые цвета)
         self.colors = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
@@ -23,7 +24,8 @@ class Garland:
         self.current_mode_index = 0
         self.modes = [
             self._mode_full_random,
-            self._mode_full_on
+            self._mode_full_on,
+            self._mode_random_flicker
         ]
 
     def _initialize_colors(self) -> list:
@@ -46,11 +48,24 @@ class Garland:
     
     def _mode_full_random(self) -> str:
         """Режим 1: Случайное раскрасшивание лампочек всеми цветами."""
-        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{choice(self.colors)}{self.bulb}" for i in range(self.garland_length)])
+        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{choice(self.colors)}{self.bulb_on}" for i in range(self.garland_length)])
     
     def _mode_full_on(self) -> str:
         """Режим 2: Все лампочки статично горят."""
-        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{self.bulb_colors[i//2]}{self.bulb}" for i in range(self.garland_length)])
+        return "".join([f"{Style.RESET_ALL}{self.wire}" if i%2==0 else f"{self.bulb_colors[i//2]}{self.bulb_on}" for i in range(self.garland_length)])
+    
+    def _mode_random_flicker(self) -> str:
+        """Режим 3: Случайное мерцание лампочек."""
+        garland_parts = []
+        for i in range(self.garland_length):
+            if i%2==0: garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
+            else:
+                # Каждая лампочка решает "зажечься" или нет случайным образом
+                if choice([True, False]):
+                    garland_parts.append(f"{self.bulb_colors[i//2]}{self.bulb_on}")
+                else:
+                    garland_parts.append(f"{Style.DIM}{self.bulb_off}")
+        return "".join(garland_parts)
 
 
 def clear_console():
