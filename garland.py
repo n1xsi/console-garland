@@ -9,14 +9,14 @@ class Garland:
     """
     Класс Гирлянды с переключаемыми режимами анимации.
 
-    garland_length - длина гирлянды (желательно нечётное число, чтобы гирлянда кончалась "-")
+    garland_length - длина гирлянды (определяется по количеству лампочек)
     """
 
-    def __init__(self, garland_length: int = 51) -> None:
-        self.garland_length = garland_length
+    def __init__(self, garland_length: int):
+        self.garland_length = garland_length*2+1  # Добавляем провода между лампочками и по краям
         self.bulb, self.wire = "●", "-"
         
-        # Список цветов для лампочек (исключая серые цвета)
+        # Список цветов для лампочек (исключая определённые серые цвета)
         self.colors = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
         self.bulb_colors = self._initialize_colors()
 
@@ -59,9 +59,9 @@ def clear_console():
 
 
 def main():
-    """Главная функция, которая имитирует работу гирлянды."""
+    """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
     clear_console()
-    garland = Garland()
+    garland = Garland(garland_length=30)
     
     # Настройка обработчика нажатия клавиши: смена режима анимации гирлянды на "Enter"
     on_press_key("enter", lambda _: garland.switch_mode())
@@ -90,5 +90,5 @@ def main():
 
 if __name__ == "__main__":
     """Запуск программы."""
-    init(autoreset=True)  # autoreset для автоматического сброса цвета консоли
+    init()
     main()
