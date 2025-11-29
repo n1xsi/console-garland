@@ -85,40 +85,29 @@ class Garland:
         return result
     
     ############################## Режимы анимации ##############################
+    # Режимы возвращают список настроек для каждой лампочки: (color, is_active)
     
-    def _mode_full_random(self) -> str:
-        """Режим 1: Случайное раскрасшивание лампочек всеми цветами."""
-        garland_parts = []
-        for i in range(self.garland_length):
-            if i%2==0:
-                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
-            else:
-                garland_parts.append(f"{choice(self.palette)}{self.bulb_on}")
-        return "".join(garland_parts)
+    def _mode_full_static(self):
+        # Все лампочки горят своими цветами
+        return [(color, True) for color in self.bulb_colors]
+
+    def _mode_random_colors(self):
+        # Цвета случайно меняются каждый кадр (эффект дискотеки)
+        return [(choice(self.palette), True) for _ in range(self.num_bulbs)]
+
+    def _mode_flicker(self):
+        # Случайное мерцание (горит или нет)
+        return [(color, choice([True, False])) for color in self.bulb_colors]
     
-    def _mode_full_on(self) -> str:
-        """Режим 2: Все лампочки статично горят."""
-        garland_parts = []
-        for i in range(self.garland_length):
-            if i%2==0:
-                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
-            else:
-                garland_parts.append(f"{self.bulb_colors[i//2]}{self.bulb_on}")
-        return "".join(garland_parts)
-    
-    def _mode_random_flicker(self) -> str:
-        """Режим 3: Случайное мерцание лампочек."""
-        garland_parts = []
-        for i in range(self.garland_length):
-            if i%2==0:
-                garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
-            else:
-                # Каждая лампочка решает "зажечься" или нет случайным образом
-                if choice([True, False]):
-                    garland_parts.append(f"{self.bulb_colors[i//2]}{self.bulb_on}")
-                else:
-                    garland_parts.append(f"{Style.DIM}{self.bulb_off}")
-        return "".join(garland_parts)
+    def _mode_blink_all(self):
+        # Все мигают одновременно
+        is_on = self.tick % 2 == 0
+        return [(color, is_on) for color in self.bulb_colors]
+
+    def _mode_running(self):
+        # Лампочки загораются по очереди (эффект бегущего огонька)
+        active_idx = self.tick % self.num_bulbs
+        return [(color, i == active_idx) for i, color in enumerate(self.bulb_colors)]
 
 
 def clear_console():
