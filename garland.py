@@ -23,7 +23,7 @@ class Garland:
         self.palette = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
         
         # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной", но постоянной)
-        self.bulb_colors = self._initialize_colors()
+        self.bulb_colors = self._initialize_unique_colors()
 
         self.modes = [
             self._mode_full_random,
@@ -31,18 +31,19 @@ class Garland:
             self._mode_random_flicker
         ]
         self.current_mode_index = 0
+        self.tick = 0  # Счётчик кадров для анимаций
 
-    def _initialize_colors(self) -> list:
-        """Генерирует последовательность цветов без повторения соседних."""
+    def _initialize_unique_colors(self) -> list:
+        """Генерирует последовательность цветов, где соседние не повторяются."""
         colors = [choice(self.palette)]
         for _ in range(self.garland_length - 1):
-            # Выбор цвета, отличного от предыдущего
             colors.append(choice([c for c in self.palette if c != colors[-1]]))
         return colors
     
     def switch_mode(self) -> None:
-        """Переключает режим анимации."""
+        """Переключает режим анимации на следующий."""
         self.current_mode_index = (self.current_mode_index + 1) % len(self.modes)
+        self.tick = 0 # Сброс тика для красивого старта новой анимации
     
     def update_and_get_string(self) -> str:
         """Вызывает текущий метод анимации и возвращает готовую строку гирлянды."""
