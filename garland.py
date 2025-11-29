@@ -12,9 +12,9 @@ class Garland:
     num_bulps - количество лампочек
     """
 
-    def __init__(self, num_bulps: int = 20):
+    def __init__(self, num_bulbs: int = 20):
         # Логические параметры
-        self.num_bulps = num_bulps
+        self.num_bulbs = num_bulbs
         self.bulb_on = "●"
         self.bulb_off = "○"
         self.wire = "-"
@@ -39,7 +39,7 @@ class Garland:
     def _initialize_unique_colors(self) -> list:
         """Генерирует последовательность цветов, где соседние не повторяются."""
         colors = [choice(self.palette)]
-        for _ in range(self.garland_length - 1):
+        for _ in range(self.num_bulbs - 1):
             colors.append(choice([c for c in self.palette if c != colors[-1]]))
         return colors
     
@@ -117,8 +117,11 @@ def clear_console():
 
 def main():
     """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
+    # Очистка консоли перед запуском
     clear_console()
-    garland = Garland(num_bulps=20)
+    
+    # Создание гирлянды на 20 лампочек
+    garland = Garland(num_bulbs=20)
     
     # Настройка обработчика нажатия клавиши: смена режима анимации гирлянды на "Enter"
     on_press_key("enter", lambda _: garland.switch_mode())
@@ -127,14 +130,21 @@ def main():
     
     try:
         while True:
-            # Получение актуального состояния гирлянды в виде строки
-            garland_str = garland.update_and_get_string()
+            # Получение данных с текущего режима
+            mode_info = garland.current_mode_info
             
-            # Вывод строки, возвращая курсор в начало
-            print(f"\r{garland_str}", end="")
+            # Формирование строки гирлянды
+            garland_str = garland.get_garland_string()
             
-            # Небольшая задержка для контроля скорости анимации
-            sleep(0.2)
+            # Формирование одной большой строки вывода
+            status_line = f"Режим [{mode_info['name']}]: "
+            output = f"\r{status_line} {garland_str} \033[K"
+            
+            # Вывод строки статуса и саму гирлянду, возвращая курсор в начало
+            print(output, end="")
+            
+            # Задержка, специфичная для режима
+            sleep(mode_info['delay'])
             
     except KeyboardInterrupt:
         # Нажатие "Ctrl+C" вызыает исключение, которое прекращает цикл
