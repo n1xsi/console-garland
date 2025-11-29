@@ -12,9 +12,9 @@ class Garland:
     num_bulps - количество лампочек
     """
 
-    def __init__(self, num_bulps: int):
+    def __init__(self, num_bulps: int = 20):
         # Логические параметры
-        self.garland_length = num_bulps*2 + 1  # Добавляем провода между лампочками и по краям
+        self.num_bulps = num_bulps
         self.bulb_on = "●"
         self.bulb_off = "○"
         self.wire = "-"
@@ -25,10 +25,13 @@ class Garland:
         # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной", но постоянной)
         self.bulb_colors = self._initialize_unique_colors()
 
+        # Структура режимов: Функция, Название, Скорость (delay)
         self.modes = [
-            self._mode_full_random,
-            self._mode_full_on,
-            self._mode_random_flicker
+            {"func": self._mode_full_static,    "name": "Статичный",        "delay": 0.2},
+            {"func": self._mode_random_colors, "name": "Дискотека",        "delay": 0.1},
+            {"func": self._mode_running,      "name": "Бегущий огонь",    "delay": 0.05},
+            {"func": self._mode_flicker,      "name": "Мерцание",         "delay": 0.15},
+            {"func": self._mode_blink_all,    "name": "Вспышка",          "delay": 0.4},
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
@@ -45,10 +48,41 @@ class Garland:
         self.current_mode_index = (self.current_mode_index + 1) % len(self.modes)
         self.tick = 0 # Сброс тика для красивого старта новой анимации
     
-    def update_and_get_string(self) -> str:
-        """Вызывает текущий метод анимации и возвращает готовую строку гирлянды."""
-        current_mode_function = self.modes[self.current_mode_index]
-        return current_mode_function()
+    @property
+    def current_mode_info(self) -> dict:
+        """Возвращает информацию о текущем режиме."""
+        return self.modes[self.current_mode_index]
+    
+    def _format_bulb(self, color: str, is_active: bool) -> str:
+        """Форматирует лампочку в зависимости от состояния."""
+        if is_active:
+            return f"{color}{self.bulb_on}"
+        else:
+            return f"{Style.DIM}{Fore.WHITE}{self.bulb_off}"
+    
+    def get_garland_string(self) -> str:
+        """
+        Главный метод сборки:
+        1. Получает состояние лампочек от текущего режима.
+        2. Собирает их в строку с бесцветными проводами.
+        """
+        mode_func = self.current_mode_info["func"]
+        
+        # Получение цветов и состояний лампочек в виде списка кортежей: (color, is_active)
+        bulbs_data = mode_func()
+        
+        # Сборка строки гирлянды
+        parts = []
+        for color, is_active in bulbs_data:
+            parts.append(self._format_bulb(color, is_active))
+        
+        # Соединение проводами: -●-●-●-
+        result = f"{Style.RESET_ALL}{self.wire}" + \
+                 f"{Style.RESET_ALL}{self.wire}".join(parts) + \
+                 f"{Style.RESET_ALL}{self.wire}"
+        
+        self.tick += 1
+        return result
     
     ############################## Режимы анимации ##############################
     
@@ -95,7 +129,7 @@ def clear_console():
 def main():
     """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
     clear_console()
-    garland = Garland(num_bulps=30)
+    garland = Garland(num_bulps=20)
     
     # Настройка обработчика нажатия клавиши: смена режима анимации гирлянды на "Enter"
     on_press_key("enter", lambda _: garland.switch_mode())
