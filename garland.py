@@ -9,30 +9,35 @@ class Garland:
     """
     Класс Гирлянды с переключаемыми режимами анимации.
 
-    garland_length - длина гирлянды (определяется по количеству лампочек)
+    num_bulps - количество лампочек
     """
 
-    def __init__(self, garland_length: int):
-        self.garland_length = garland_length*2+1  # Добавляем провода между лампочками и по краям
-        self.bulb_on, self.bulb_off = "●", "○"
+    def __init__(self, num_bulps: int):
+        # Логические параметры
+        self.garland_length = num_bulps*2 + 1  # Добавляем провода между лампочками и по краям
+        self.bulb_on = "●"
+        self.bulb_off = "○"
         self.wire = "-"
         
-        # Список цветов для лампочек (исключая определённые серые цвета)
-        self.colors = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
+        # Генерация палитры (исключая тёмные и серые цвета)
+        self.palette = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
+        
+        # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной", но постоянной)
         self.bulb_colors = self._initialize_colors()
 
-        self.current_mode_index = 0
         self.modes = [
             self._mode_full_random,
             self._mode_full_on,
             self._mode_random_flicker
         ]
+        self.current_mode_index = 0
 
     def _initialize_colors(self) -> list:
         """Генерирует последовательность цветов без повторения соседних."""
-        colors = [choice(self.colors)]
+        colors = [choice(self.palette)]
         for _ in range(self.garland_length - 1):
-            colors.append(choice([c for c in self.colors if c != colors[-1]]))
+            # Выбор цвета, отличного от предыдущего
+            colors.append(choice([c for c in self.palette if c != colors[-1]]))
         return colors
     
     def switch_mode(self) -> None:
@@ -44,7 +49,7 @@ class Garland:
         current_mode_function = self.modes[self.current_mode_index]
         return current_mode_function()
     
-    ##### Режимы анимации #####
+    ############################## Режимы анимации ##############################
     
     def _mode_full_random(self) -> str:
         """Режим 1: Случайное раскрасшивание лампочек всеми цветами."""
@@ -53,7 +58,7 @@ class Garland:
             if i%2==0:
                 garland_parts.append(f"{Style.RESET_ALL}{self.wire}")
             else:
-                garland_parts.append(f"{choice(self.colors)}{self.bulb_on}")
+                garland_parts.append(f"{choice(self.palette)}{self.bulb_on}")
         return "".join(garland_parts)
     
     def _mode_full_on(self) -> str:
@@ -89,7 +94,7 @@ def clear_console():
 def main():
     """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
     clear_console()
-    garland = Garland(garland_length=30)
+    garland = Garland(num_bulps=30)
     
     # Настройка обработчика нажатия клавиши: смена режима анимации гирлянды на "Enter"
     on_press_key("enter", lambda _: garland.switch_mode())
@@ -108,7 +113,7 @@ def main():
             sleep(0.2)
             
     except KeyboardInterrupt:
-        # Нажатие Ctrl+C вызыает исключение, которое прекращает цикл
+        # Нажатие "Ctrl+C" вызыает исключение, которое прекращает цикл
         print("\nГирлянда выключена!")
         
     finally:
