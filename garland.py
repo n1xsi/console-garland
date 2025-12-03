@@ -28,10 +28,10 @@ class Garland:
         # Структура режимов: Функция, Название, Скорость (delay)
         self.modes = [
             {"func": self._mode_full_static,    "name": "Статичный",        "delay": 0.2},
-            {"func": self._mode_random_colors, "name": "Дискотека",        "delay": 0.1},
-            {"func": self._mode_running,      "name": "Бегущий огонь",    "delay": 0.05},
-            {"func": self._mode_flicker,      "name": "Мерцание",         "delay": 0.15},
-            {"func": self._mode_blink_all,    "name": "Вспышка",          "delay": 0.4},
+            {"func": self._mode_random_colors,  "name": "Дискотека",        "delay": 0.1},
+            {"func": self._mode_running,        "name": "Бегущий огонь",    "delay": 0.05},
+            {"func": self._mode_flicker,        "name": "Мерцание",         "delay": 0.15},
+            {"func": self._mode_blink_all,      "name": "Вспышка",          "delay": 0.4},
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
