@@ -40,6 +40,7 @@ class Garland:
             {"func": self._mode_running,        "name": "Бегущий огонь",    "delay": 0.05},
             {"func": self._mode_flicker,        "name": "Мерцание",         "delay": 0.15},
             {"func": self._mode_blink_all,      "name": "Вспышка",          "delay": 0.4},
+            {"func": self._mode_filling,        "name": "Заполнение",       "delay": 0.05}
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
@@ -106,20 +107,35 @@ class Garland:
     def _mode_random_colors(self):
         # Цвета случайно меняются каждый кадр (эффект дискотеки)
         return [(choice(self.palette), True) for _ in range(self.num_bulbs)]
+    
+    def _mode_running(self):
+        # Лампочки загораются по очереди (эффект бегущего огонька)
+        active_idx = self.tick % self.num_bulbs
+        return [(color, i == active_idx) for i, color in enumerate(self.bulb_colors)]
 
     def _mode_flicker(self):
         # Случайное мерцание (горит или нет)
         return [(color, choice([True, False])) for color in self.bulb_colors]
 
     def _mode_blink_all(self):
-        # Все мигают одновременно
+        # Все лампочки мигают одновременно
         is_on = self.tick % 2 == 0
         return [(color, is_on) for color in self.bulb_colors]
-
-    def _mode_running(self):
-        # Лампочки загораются по очереди (эффект бегущего огонька)
-        active_idx = self.tick % self.num_bulbs
-        return [(color, i == active_idx) for i, color in enumerate(self.bulb_colors)]
+    
+    def _mode_filling(self):
+        # Лампочки загораются по очереди до полного заполнения, затем гаснут также по очереди
+        anim_len = self.num_bulbs * 2
+        step = self.tick % anim_len
+        
+        result = []
+        for i in range(self.num_bulbs):
+            if step < self.num_bulbs:  # Фаза зажигания (0 -> N)
+                is_on = (i <= step)
+            else:                      # Фаза гаснения (N -> 2N)
+                cutoff = step - self.num_bulbs
+                is_on = (i > cutoff)
+            result.append((self.bulb_colors[i], is_on))
+        return result
 
 
 def clear_console():
