@@ -40,7 +40,9 @@ class Garland:
             {"func": self._mode_running,        "name": "Бегущий огонь",    "delay": 0.05},
             {"func": self._mode_flicker,        "name": "Мерцание",         "delay": 0.15},
             {"func": self._mode_blink_all,      "name": "Вспышка",          "delay": 0.4},
-            {"func": self._mode_filling,        "name": "Заполнение",       "delay": 0.05}
+            {"func": self._mode_filling,        "name": "Заполнение",       "delay": 0.05},
+            {"func": self._mode_odd_even,       "name": "Чётные и нечётные",  "delay": 0.25},
+            {"func": self._mode_blinking_odd_even, "name": "Поочерёдное мигание", "delay": 0.25}
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
@@ -136,6 +138,15 @@ class Garland:
                 is_on = (i > cutoff)
             result.append((self.bulb_colors[i], is_on))
         return result
+    
+    def _mode_odd_even(self):
+        # Загораются поочерёдно то чётные, то нечётные лампочки
+        return [(color, (self.tick + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
+    
+    def _mode_blinking_odd_even(self):
+        # Мигают чётные два раза, потом нечётные два раза
+        if self.tick % 2 == 0: return [(color, False) for color in self.bulb_colors]
+        return [(color, (self.tick // 4 + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
 
 
 def clear_console():
