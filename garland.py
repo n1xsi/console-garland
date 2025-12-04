@@ -23,13 +23,13 @@ class Garland:
         self.bulb_on = "●"
         self.bulb_off = "○"
         self.wire = "-"
-        
+
         # Флаг видимости заголовка
         self.header_visible = True
-        
+
         # Генерация палитры (исключая тёмные и серые цвета)
         self.palette = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
-        
+
         # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной", но постоянной)
         self.bulb_colors = self._initialize_unique_colors()
 
@@ -50,28 +50,28 @@ class Garland:
         for _ in range(self.num_bulbs - 1):
             colors.append(choice([c for c in self.palette if c != colors[-1]]))
         return colors
-    
+
     def switch_mode(self) -> None:
         """Переключает режим анимации на следующий."""
         self.current_mode_index = (self.current_mode_index + 1) % len(self.modes)
-        self.tick = 0 # Сброс тика для красивого старта новой анимации
-    
+        self.tick = 0  # Сброс тика для красивого старта новой анимации
+
     def toggle_header(self) -> None:
         """Включает/выключает отображение заголовка."""
         self.header_visible = not self.header_visible
-    
+
     @property
     def current_mode_info(self) -> dict:
         """Возвращает информацию о текущем режиме."""
         return self.modes[self.current_mode_index]
-    
+
     def _format_bulb(self, color: str, is_active: bool) -> str:
         """Форматирует лампочку в зависимости от состояния."""
         if is_active:
             return f"{color}{self.bulb_on}"
         else:
             return f"{Style.DIM}{Fore.WHITE}{self.bulb_off}"
-    
+
     def get_garland_string(self) -> str:
         """
         Главный метод сборки:
@@ -79,26 +79,26 @@ class Garland:
         2. Собирает их в строку с бесцветными проводами.
         """
         mode_func = self.current_mode_info["func"]
-        
+
         # Получение цветов и состояний лампочек в виде списка кортежей: (color, is_active)
         bulbs_data = mode_func()
-        
+
         # Сборка строки гирлянды
         parts = []
         for color, is_active in bulbs_data:
             parts.append(self._format_bulb(color, is_active))
-        
+
         # Соединение проводами: -●-●-●-
         result = f"{Style.RESET_ALL}{self.wire}" + \
-                 f"{Style.RESET_ALL}{self.wire}".join(parts) + \
-                 f"{Style.RESET_ALL}{self.wire}"
-        
+            f"{Style.RESET_ALL}{self.wire}".join(parts) + \
+            f"{Style.RESET_ALL}{self.wire}"
+
         self.tick += 1
         return result
-    
+
     ############################## Режимы анимации ##############################
     # Режимы возвращают список настроек для каждой лампочки: (color, is_active)
-    
+
     def _mode_full_static(self):
         # Все лампочки горят своими цветами
         return [(color, True) for color in self.bulb_colors]
@@ -110,7 +110,7 @@ class Garland:
     def _mode_flicker(self):
         # Случайное мерцание (горит или нет)
         return [(color, choice([True, False])) for color in self.bulb_colors]
-    
+
     def _mode_blink_all(self):
         # Все мигают одновременно
         is_on = self.tick % 2 == 0
@@ -131,17 +131,17 @@ def main():
     """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
     # Очистка консоли перед запуском
     clear_console()
-    
+
     # Создание гирлянды на 20 лампочек
     garland = Garland(num_bulbs=20)
-    
+
     # Регистрация горячих клавиш
     on_press_key("enter", lambda _: garland.switch_mode())  # Смена режима анимации гирлянды
     on_press_key("h", lambda _: garland.toggle_header())    # Переключение видимости заголовка
-    
+
     # Вывод строки с инструкцией
     print("🎄 Гирлянда (ENTER - switch, Ctrl+C - exit)")
-    
+
     try:
         while True:
             if garland.header_visible:
@@ -152,14 +152,14 @@ def main():
                     f"{Fore.WHITE}ENTER - switch; Ctrl+C - exit; H - hide it 🎄"
                 )
             else:
-                # Если скрыто - печатаем пустую строку, чтобы сохранить разметку экрана
+                # Если заголовок скрыт - то он становится пустотой, чтобы сохранить разметку экрана
                 header_str = ""
-        
+
             # Формирование строки гирлянды
             garland_str = garland.get_garland_string()
-            
+
             # Вывод заголовка и гирлянды, выводя всё с начала
-            
+
             # Логика: подъём на 1 строку ↑, очистка строки, печать заголовка,
             # спуск на 1 строку ↓, очистка строки, печать гирлянды
 
@@ -171,7 +171,7 @@ def main():
     except KeyboardInterrupt:
         # Нажатие "Ctrl+C" вызыает исключение, которое прекращает цикл
         print("\nГирлянда выключена!")
-        
+
     finally:
         # Точный сброс цвета консоли перед выходом
         print(Style.RESET_ALL)
