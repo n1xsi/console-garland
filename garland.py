@@ -30,7 +30,7 @@ class Garland:
         # Генерация палитры (исключая тёмные и серые цвета)
         self.palette = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
 
-        # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной", но постоянной)
+        # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной" и неизменной)
         self.bulb_colors = self._initialize_unique_colors()
 
         # Структура режимов: Функция, Название, Скорость (delay)
@@ -42,7 +42,8 @@ class Garland:
             {"func": self._mode_blink_all,      "name": "Вспышка",          "delay": 0.4},
             {"func": self._mode_filling,        "name": "Заполнение",       "delay": 0.05},
             {"func": self._mode_odd_even,       "name": "Чётные и нечётные",  "delay": 0.25},
-            {"func": self._mode_blinking_odd_even, "name": "Поочерёдное мигание", "delay": 0.25}
+            {"func": self._mode_blinking_odd_even, "name": "Поочерёдное мигание", "delay": 0.25},
+            {"func": self._mode_flipping, "name": "Переброс", "delay": 0.2}
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
@@ -128,7 +129,6 @@ class Garland:
         # Лампочки загораются по очереди до полного заполнения, затем гаснут также по очереди
         anim_len = self.num_bulbs * 2
         step = self.tick % anim_len
-        
         result = []
         for i in range(self.num_bulbs):
             if step < self.num_bulbs:  # Фаза зажигания (0 -> N)
@@ -147,6 +147,11 @@ class Garland:
         # Мигают чётные два раза, потом нечётные два раза
         if self.tick % 2 == 0: return [(color, False) for color in self.bulb_colors]
         return [(color, (self.tick // 4 + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
+    
+    def _mode_flipping(self):
+        # Лампочки меняются местами с конца в начало
+        temp_colors = self.bulb_colors[-(self.tick%self.num_bulbs):] + self.bulb_colors[:-(self.tick%self.num_bulbs)]
+        return [(color, True) for color in temp_colors]
 
 
 def clear_console():
@@ -163,7 +168,7 @@ def main():
     garland = Garland(num_bulbs=20)
 
     # Регистрация горячих клавиш
-    on_press_key("enter", lambda _: garland.switch_mode())  # Смена режима анимации гирлянды
+    on_press_key("enter", lambda _: garland.switch_mode())  # Смена анимации гирлянды
     on_press_key("h", lambda _: garland.toggle_header())    # Переключение видимости заголовка
 
     # Вывод строки с инструкцией
