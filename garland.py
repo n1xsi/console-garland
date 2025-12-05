@@ -35,15 +35,15 @@ class Garland:
 
         # Структура режимов: Функция, Название, Скорость (delay)
         self.modes = [
-            {"func": self._mode_full_static,    "name": "Статичный",        "delay": 0.2},
-            {"func": self._mode_random_colors,  "name": "Дискотека",        "delay": 0.1},
-            {"func": self._mode_running,        "name": "Бегущий огонь",    "delay": 0.05},
-            {"func": self._mode_flicker,        "name": "Мерцание",         "delay": 0.15},
-            {"func": self._mode_blink_all,      "name": "Вспышка",          "delay": 0.4},
-            {"func": self._mode_filling,        "name": "Заполнение",       "delay": 0.05},
-            {"func": self._mode_odd_even,       "name": "Чётные и нечётные",  "delay": 0.25},
-            {"func": self._mode_blinking_odd_even, "name": "Поочерёдное мигание", "delay": 0.25},
-            {"func": self._mode_flipping, "name": "Переброс", "delay": 0.2}
+            {"func": self._mode_full_static,   "name": "Статичный",          "delay": 0.2},
+            {"func": self._mode_random_colors, "name": "Дискотека",          "delay": 0.1},
+            {"func": self._mode_running,       "name": "Бегущий огонёк",     "delay": 0.05},
+            {"func": self._mode_flicker,       "name": "Случайное мерцание", "delay": 0.15},
+            {"func": self._mode_blink_all,     "name": "Вспышка",            "delay": 0.4},
+            {"func": self._mode_filling,       "name": "Заполнение",         "delay": 0.05},
+            {"func": self._mode_odd_even,      "name": "Чётные-нечётные",    "delay": 0.25},
+            {"func": self._mode_blinking,      "name": "Мигание",            "delay": 0.25},
+            {"func": self._mode_flipping,      "name": "Переброс",           "delay": 0.2}
         ]
         self.current_mode_index = 0
         self.tick = 0  # Счётчик кадров для анимаций
@@ -143,7 +143,7 @@ class Garland:
         # Загораются поочерёдно то чётные, то нечётные лампочки
         return [(color, (self.tick + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
     
-    def _mode_blinking_odd_even(self):
+    def _mode_blinking(self):
         # Мигают чётные два раза, потом нечётные два раза
         if self.tick % 2 == 0: return [(color, False) for color in self.bulb_colors]
         return [(color, (self.tick // 4 + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
@@ -164,7 +164,7 @@ def main():
     # Очистка консоли перед запуском
     clear_console()
 
-    # Создание гирлянды на 20 лампочек
+    # Создание гирлянды из 20 лампочек
     garland = Garland(num_bulbs=20)
 
     # Регистрация горячих клавиш
