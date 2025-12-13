@@ -1,7 +1,7 @@
 from colorama import init, Fore, Style
 from keyboard import on_press_key
 from random import choice
-from time import sleep
+from time import sleep, time
 import os
 
 
@@ -24,12 +24,15 @@ class Garland:
         self.bulb_off = "○"
         self.wire = "-"
 
-        # Флаг видимости заголовка
+        # Флаги интерфейса
         self.header_visible = True
+        self.auto_switch = False
+        
+        # Время последнего переключения
+        self.last_switch_time = time()
 
         # Генерация палитры (исключая тёмные и серые цвета)
         self.palette = [c for i, c in enumerate(Fore.__dict__.values()) if i not in [0, 4, 10, 14, 15]]
-
         # Статичные цвета для лампочек (чтобы гирлянда была "разноцветной" и неизменной)
         self.bulb_colors = self._initialize_unique_colors()
 
@@ -58,11 +61,18 @@ class Garland:
     def switch_mode(self) -> None:
         """Переключает режим анимации на следующий."""
         self.current_mode_index = (self.current_mode_index + 1) % len(self.modes)
-        self.tick = 0  # Сброс тика для красивого старта новой анимации
+        self.tick = 0                   # Сброс тика для красивого старта новой анимации
+        self.last_switch_time = time()  # Обновление времени последнего переключения
 
     def toggle_header(self) -> None:
         """Включает/выключает отображение заголовка."""
         self.header_visible = not self.header_visible
+    
+    def toggle_auto_switch(self) -> None:
+        """Включает/выключает автоматическую смену режимов."""
+        self.auto_switch = not self.auto_switch
+        # Сброс таймера, чтобы смена режима не произошла мгновенно при включении
+        self.last_switch_time = time() 
 
     @property
     def current_mode_info(self) -> dict:
@@ -168,23 +178,32 @@ def main():
     garland = Garland(num_bulbs=20)
 
     # Регистрация горячих клавиш
-    on_press_key("enter", lambda _: garland.switch_mode())  # Смена анимации гирлянды
-    on_press_key("h", lambda _: garland.toggle_header())    # Переключение видимости заголовка
+    on_press_key("enter", lambda _: garland.switch_mode())     # Смена анимации гирлянды
+    on_press_key("h", lambda _: garland.toggle_header())       # Переключение видимости заголовка
+    on_press_key("a", lambda _: garland.toggle_auto_switch())  # Переключение авто-смены режимов
 
-    # Вывод строки с инструкцией
-    print("🎄 Гирлянда (ENTER - switch, Ctrl+C - exit)")
+    print("\n") # Отступ для старта
 
     try:
         while True:
+            # ЛОГИКА АВТОМАТИЧЕСКОГО ПЕРЕКЛЮЧЕНИЯ РЕЖИМОВ
+            if garland.auto_switch:
+                if time() - garland.last_switch_time > 5: # Каждые 5 секунд смена режима
+                    garland.switch_mode()
+            
+            # ОТРИСОВКА ИНТЕРФЕЙСА
             if garland.header_visible:
                 mode_name = garland.current_mode_info['name']
+                auto_status = f"{Fore.GREEN}Вкл" if garland.auto_switch else f"{Fore.RED}ВЫКЛ"
+                
                 header_str = (
                     f"{Fore.GREEN}🎄 garland.py 🌟 "
                     f"{Fore.CYAN}Режим: {mode_name} 🌟 "
-                    f"{Fore.WHITE}ENTER - switch; Ctrl+C - exit; H - hide it 🎄"
+                    f"{Fore.BLUE}Авто: {auto_status} 🌟 "
+                    f"{Fore.WHITE}ENTER - switch; Ctrl+C - exit; A - toggle auto; H - hide it 🎄"
                 )
             else:
-                # Если заголовок скрыт - то он становится пустотой, чтобы сохранить разметку экрана
+                # Если заголовок скрыт - то пустота, чтобы сохранить разметку экрана
                 header_str = ""
 
             # Формирование строки гирлянды
@@ -192,7 +211,7 @@ def main():
 
             # Вывод заголовка и гирлянды, выводя всё с начала
 
-            # Логика: подъём на 1 строку ↑, очистка строки, печать заголовка,
+            # ЛОГИКА: подъём на 1 строку ↑, очистка строки, печать заголовка,
             # спуск на 1 строку ↓, очистка строки, печать гирлянды
 
             print(f"{CURSOR_UP}{CLEAR_LINE}{header_str}\n{CLEAR_LINE} {garland_str} ", end="")
