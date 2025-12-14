@@ -27,7 +27,7 @@ class Garland:
         # Флаги интерфейса
         self.header_visible = True
         self.auto_switch = False
-        
+
         # Время последнего переключения
         self.last_switch_time = time()
 
@@ -67,12 +67,12 @@ class Garland:
     def toggle_header(self) -> None:
         """Включает/выключает отображение заголовка."""
         self.header_visible = not self.header_visible
-    
+
     def toggle_auto_switch(self) -> None:
         """Включает/выключает автоматическую смену режимов."""
         self.auto_switch = not self.auto_switch
         # Сброс таймера, чтобы смена режима не произошла мгновенно при включении
-        self.last_switch_time = time() 
+        self.last_switch_time = time()
 
     @property
     def current_mode_info(self) -> dict:
@@ -94,7 +94,7 @@ class Garland:
         """
         mode_func = self.current_mode_info["func"]
 
-        # Получение цветов и состояний лампочек в виде списка кортежей: (color, is_active)
+        # Получение цветов и состояний лампочек в виде списка кортежей
         bulbs_data = mode_func()
 
         # Сборка строки гирлянды
@@ -111,7 +111,8 @@ class Garland:
         return result
 
     ############################## Режимы анимации ##############################
-    # Режимы возвращают список настроек для каждой лампочки: (color, is_active)
+    # Режимы возвращают список настроек для каждой лампочки: (color, is_active) #
+    #############################################################################
 
     def _mode_full_static(self):
         # Все лампочки горят своими цветами
@@ -120,7 +121,7 @@ class Garland:
     def _mode_random_colors(self):
         # Цвета случайно меняются каждый кадр (эффект дискотеки)
         return [(choice(self.palette), True) for _ in range(self.num_bulbs)]
-    
+
     def _mode_running(self):
         # Лампочки загораются по очереди (эффект бегущего огонька)
         active_idx = self.tick % self.num_bulbs
@@ -134,7 +135,7 @@ class Garland:
         # Все лампочки мигают одновременно
         is_on = self.tick % 2 == 0
         return [(color, is_on) for color in self.bulb_colors]
-    
+
     def _mode_filling(self):
         # Лампочки загораются по очереди до полного заполнения, затем гаснут также по очереди
         anim_len = self.num_bulbs * 2
@@ -143,24 +144,25 @@ class Garland:
         for i in range(self.num_bulbs):
             if step < self.num_bulbs:  # Фаза зажигания (0 -> N)
                 is_on = (i <= step)
-            else:                      # Фаза гаснения (N -> 2N)
+            else:                      # Фаза выключения (N -> 2N)
                 cutoff = step - self.num_bulbs
                 is_on = (i > cutoff)
             result.append((self.bulb_colors[i], is_on))
         return result
-    
+
     def _mode_odd_even(self):
         # Загораются поочерёдно то чётные, то нечётные лампочки
         return [(color, (self.tick + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
-    
+
     def _mode_blinking(self):
         # Мигают чётные два раза, потом нечётные два раза
-        if self.tick % 2 == 0: return [(color, False) for color in self.bulb_colors]
+        if self.tick % 2 == 0:
+            return [(color, False) for color in self.bulb_colors]
         return [(color, (self.tick // 4 + i) % 2 == 0) for i, color in enumerate(self.bulb_colors)]
-    
+
     def _mode_flipping(self):
         # Лампочки меняются местами с конца в начало
-        temp_colors = self.bulb_colors[-(self.tick%self.num_bulbs):] + self.bulb_colors[:-(self.tick%self.num_bulbs)]
+        temp_colors = self.bulb_colors[-(self.tick % self.num_bulbs):] + self.bulb_colors[:-(self.tick % self.num_bulbs)]
         return [(color, True) for color in temp_colors]
 
 
@@ -182,20 +184,20 @@ def main():
     on_press_key("h", lambda _: garland.toggle_header())       # Переключение видимости заголовка
     on_press_key("a", lambda _: garland.toggle_auto_switch())  # Переключение авто-смены режимов
 
-    print("\n") # Отступ для старта
+    print("\n")  # Отступ для старта
 
     try:
         while True:
             # ЛОГИКА АВТОМАТИЧЕСКОГО ПЕРЕКЛЮЧЕНИЯ РЕЖИМОВ
             if garland.auto_switch:
-                if time() - garland.last_switch_time > 5: # Каждые 5 секунд смена режима
+                if time() - garland.last_switch_time > 5:  # Каждые 5 секунд смена режима
                     garland.switch_mode()
-            
+
             # ОТРИСОВКА ИНТЕРФЕЙСА
             if garland.header_visible:
                 mode_name = garland.current_mode_info['name']
                 auto_status = f"{Fore.GREEN}Вкл" if garland.auto_switch else f"{Fore.RED}ВЫКЛ"
-                
+
                 header_str = (
                     f"{Fore.GREEN}🎄 garland.py 🌟 "
                     f"{Fore.CYAN}Режим: {mode_name} 🌟 "
@@ -203,17 +205,15 @@ def main():
                     f"{Fore.WHITE}ENTER - switch; Ctrl+C - exit; A - toggle auto; H - hide it 🎄"
                 )
             else:
-                # Если заголовок скрыт - то пустота, чтобы сохранить разметку экрана
+                # Если заголовок скрыт - то рисуется пустота, чтобы сохранить разметку экрана
                 header_str = ""
 
             # Формирование строки гирлянды
             garland_str = garland.get_garland_string()
 
             # Вывод заголовка и гирлянды, выводя всё с начала
-
             # ЛОГИКА: подъём на 1 строку ↑, очистка строки, печать заголовка,
             # спуск на 1 строку ↓, очистка строки, печать гирлянды
-
             print(f"{CURSOR_UP}{CLEAR_LINE}{header_str}\n{CLEAR_LINE} {garland_str} ", end="")
 
             # Задержка, специфичная для режима
@@ -224,7 +224,7 @@ def main():
         print("\nГирлянда выключена!")
 
     finally:
-        # Точный сброс цвета консоли перед выходом
+        # Уточняющий сброс цвета консоли перед выходом
         print(Style.RESET_ALL)
 
 
