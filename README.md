@@ -7,8 +7,9 @@
   console-garland
 
   ![Python](https://custom-icon-badges.demolab.com/badge/3.10+-f14c4c?logo=pythonn&label=Python&labelColor=100d11&style=for-the-badge)
-  ![Debian WSL](https://img.shields.io/badge/WSL-42e66c?logo=debian&label=Debian&logoColor=A81D33&labelColor=100d11&style=for-the-badge)
+  ![Colorama](https://custom-icon-badges.demolab.com/badge/0.4.6+-0ed145?logo=white-cube&label=colorama&logoColor=A81D33&labelColor=100d11&style=for-the-badge)
   [![License](https://custom-icon-badges.demolab.com/badge/MIT-3b8eea?logo=law&label=License&labelColor=100d11&style=for-the-badge)](LICENSE)
+  ![Vibe](https://img.shields.io/badge/Vibe-Festive-yellow?labelColor=100d11&style=for-the-badge)
   
 </h1>
 
