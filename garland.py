@@ -1,13 +1,17 @@
 from colorama import init, Fore, Style
-from keyboard import on_press_key
-from random import choice
+
 from time import sleep, time
+from random import choice
+from sys import stdin
+
 import os
 
 
 # Константы для управления курсором в консоли
 CURSOR_UP = "\033[A"
 CLEAR_LINE = "\r\033[K"
+
+OS_NAME = os.name
 
 
 class Garland:
@@ -165,29 +169,72 @@ class Garland:
         temp_colors = self.bulb_colors[-(self.tick % self.num_bulbs):] + self.bulb_colors[:-(self.tick % self.num_bulbs)]
         return [(color, True) for color in temp_colors]
 
+# Утилиты для настройки терминала
+def get_key():
+    """Считывает нажатие клавиши в зависимости от ОС."""
+    if OS_NAME == 'nt':  # Windows
+        from msvcrt import kbhit, getch
+        if kbhit():
+            # Получаение байта и декодирование, если это возможно
+            ch = getch()
+            try:
+                return ch.decode('utf-8').lower()
+            except UnicodeDecodeError:
+                return None
+        return None
+    else:  # Linux/Mac
+        from termios import tcgetattr, tcsetattr, TCSADRAIN
+        from select import select
+        from tty import setcbreak
+        # Проверка, есть ли данные в stdin
+        dr, dw, de = select.select([stdin], [], [], 0)
+        if dr:
+            return stdin.read(1).lower()
+        return None
+
+
+def setup_terminal():
+    """Переводит терминал в raw-режим (для Linux), чтобы читать клавиши без Enter."""
+    if OS_NAME != 'nt':
+        fd = stdin.fileno()
+        old_settings = tcgetattr(fd)
+        setcbreak(fd)  # Позволяет читать посимвольно
+        return fd, old_settings
+    return None, None
+
+
+def restore_terminal(fd, old_settings):
+    """Возвращает настройки терминала обратно."""
+    if OS_NAME != 'nt' and fd is not None:
+        tcsetattr(fd, TCSADRAIN, old_settings)
+
 
 def clear_console():
     """Очищает консоль в зависимости от ОС."""
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if OS_NAME == 'nt' else 'clear')
 
-
+# Запуск
 def main():
-    """Главная функция, которая запускает гирлянду и обрабатывает ввод с клавиатуры."""
-    # Очистка консоли перед запуском
-    clear_console()
+    clear_console()  # Очистка консоли для выделения гирлянды
+    init()           # Инициализация colorama
 
-    # Создание гирлянды из 20 лампочек
-    garland = Garland(num_bulbs=20)
-
-    # Регистрация горячих клавиш
-    on_press_key("enter", lambda _: garland.switch_mode())     # Смена анимации гирлянды
-    on_press_key("h", lambda _: garland.toggle_header())       # Переключение видимости заголовка
-    on_press_key("a", lambda _: garland.toggle_auto_switch())  # Переключение авто-смены режимов
-
-    print("\n")  # Отступ для старта
+    fd, old_settings = setup_terminal()  # Настройка терминала
+    garland = Garland(num_bulbs=30)      # Создание гирлянды
 
     try:
         while True:
+            # ОБРАБОТКА ВВОДА
+            key = get_key()
+            match key:
+                case '\r' | '\n':   # Enter
+                    garland.switch_mode()
+                case 'h':           # H
+                    garland.toggle_header()
+                case 'a':           # A
+                    garland.toggle_auto_switch()
+                case '\x03':        # Ctrl+C
+                    raise KeyboardInterrupt
+            
             # ЛОГИКА АВТОМАТИЧЕСКОГО ПЕРЕКЛЮЧЕНИЯ РЕЖИМОВ
             if garland.auto_switch:
                 if time() - garland.last_switch_time > 5:  # Каждые 5 секунд смена режима
@@ -205,15 +252,13 @@ def main():
                     f"{Fore.WHITE}ENTER - switch; Ctrl+C - exit; A - toggle auto; H - hide it 🎄"
                 )
             else:
-                # Если заголовок скрыт - то рисуется пустота, чтобы сохранить разметку экрана
+                # Если заголовок скрыт, то рисуется пустота для сохранения разметки экрана
                 header_str = ""
 
             # Формирование строки гирлянды
             garland_str = garland.get_garland_string()
 
             # Вывод заголовка и гирлянды, выводя всё с начала
-            # ЛОГИКА: подъём на 1 строку ↑, очистка строки, печать заголовка,
-            # спуск на 1 строку ↓, очистка строки, печать гирлянды
             print(f"{CURSOR_UP}{CLEAR_LINE}{header_str}\n{CLEAR_LINE} {garland_str} ", end="")
 
             # Задержка, специфичная для режима
@@ -221,14 +266,12 @@ def main():
 
     except KeyboardInterrupt:
         # Нажатие "Ctrl+C" вызыает исключение, которое прекращает цикл
-        print("\nГирлянда выключена!")
+        print(f"\n{Style.RESET_ALL}Гирлянда выключена!")
 
     finally:
-        # Уточняющий сброс цвета консоли перед выходом
-        print(Style.RESET_ALL)
+        restore_terminal(fd, old_settings)  # Восстановление настроек терминала
+        print(Style.RESET_ALL)              # Уточняющий сброс цвета консоли перед выходом
 
 
 if __name__ == "__main__":
-    """Запуск программы."""
-    init()
     main()
