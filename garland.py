@@ -4,14 +4,20 @@ from time import sleep, time
 from random import choice
 from sys import stdin
 
-import os
+import os; OS_NAME = os.name
+
+# Подключение библиотек для работы с клавиатурой в зависимости от ОС
+if OS_NAME == 'nt':
+    from msvcrt import kbhit, getch
+else:
+    from termios import tcgetattr, tcsetattr, TCSADRAIN
+    from select import select
+    from tty import setcbreak
 
 
 # Константы для управления курсором в консоли
 CURSOR_UP = "\033[A"
 CLEAR_LINE = "\r\033[K"
-
-OS_NAME = os.name
 
 
 class Garland:
@@ -173,7 +179,6 @@ class Garland:
 def get_key():
     """Считывает нажатие клавиши в зависимости от ОС."""
     if OS_NAME == 'nt':  # Windows
-        from msvcrt import kbhit, getch
         if kbhit():
             # Получаение байта и декодирование, если это возможно
             ch = getch()
@@ -183,11 +188,8 @@ def get_key():
                 return None
         return None
     else:  # Linux/Mac
-        from termios import tcgetattr, tcsetattr, TCSADRAIN
-        from select import select
-        from tty import setcbreak
         # Проверка, есть ли данные в stdin
-        dr, dw, de = select.select([stdin], [], [], 0)
+        dr, dw, de = select([stdin], [], [], 0)
         if dr:
             return stdin.read(1).lower()
         return None
