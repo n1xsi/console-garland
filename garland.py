@@ -222,8 +222,8 @@ def arguments_init() -> Namespace:
     parser.add_argument(
         "-l", "--length",
         type=int,
-        default=30,
-        help="Длина гирлянды (кол-во лампочек). По умолчанию: 30"
+        default=40,
+        help="Длина гирлянды (кол-во лампочек). По умолчанию: 40"
     )
     return parser.parse_args()
 
@@ -271,7 +271,7 @@ def main():
                     f"{Fore.GREEN}🎄 garland.py 🌟 "
                     f"{Fore.CYAN}Режим: {mode_name} 🌟 "
                     f"{Fore.BLUE}Авто: {auto_status} 🌟 "
-                    f"{Fore.WHITE}hotkeys: ENTER; Ctrl+C; A; H 🎄"
+                    f"{Fore.WHITE}hotkeys: ENTER, Ctrl+C, A, H 🎄"
                 )
             else:
                 # Если заголовок скрыт, то рисуется пустота для сохранения разметки экрана
