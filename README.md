@@ -5,9 +5,12 @@
   console-garland
 
   ![Python](https://custom-icon-badges.demolab.com/badge/3.10+-f14c4c?logo=pythonn&label=Python&labelColor=100d11&style=for-the-badge)
-  ![Colorama](https://custom-icon-badges.demolab.com/badge/0.4.6+-0ed145?logo=white-cube&label=colorama&logoColor=A81D33&labelColor=100d11&style=for-the-badge)
-  [![License](https://custom-icon-badges.demolab.com/badge/MIT-3b8eea?logo=law&label=License&labelColor=100d11&style=for-the-badge)](LICENSE)
+  ![Colorama](https://custom-icon-badges.demolab.com/badge/0.4.6+-0ed145?logo=white-cube&label=colorama&labelColor=100d11&style=for-the-badge)
   ![Vibe](https://img.shields.io/badge/Vibe-Festive-yellow?labelColor=100d11&style=for-the-badge)
+  [![License](https://custom-icon-badges.demolab.com/badge/MIT-3b8eea?logo=law&label=License&labelColor=100d11&style=for-the-badge)](LICENSE)
+
+  ![Windows](https://custom-icon-badges.demolab.com/badge/Windows-100d11?logo=windows&labelColor=100d11&style=for-the-badge)
+  ![Linux](https://img.shields.io/badge/Linux-100d11?logo=linux&logoColor=FCC624&labelColor=100d11&style=for-the-badge)
   
 </h1>
 
@@ -17,10 +20,10 @@
 Простенький проект был написан для создания небольшой 🎅🎄**новогодней**🎁✨ атмосферы в терминале.
 
 
-## 📌 **Особенности/Возможности**:
+## 📌 **Особенности**
 
 <div align="center">
-  <img src="https://i.imgur.com/kZICc1t.png" align="top" width="90%" alt="Menu">
+  <img src="https://i.imgur.com/Xb1B5O2.png" align="top" width="75%" alt="Menu">
 </div>
 
 <br>
