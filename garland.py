@@ -102,8 +102,6 @@ class Garland:
     def get_garland_string(self) -> str:
         """
         Метод сборки цветной гирлянды.
-        1. Получает состояние лампочек от текущего режима
-        2. Собирает их в строку с бесцветными проводами.
         """
         mode_func = self.current_mode_info["func"]
 
@@ -225,6 +223,11 @@ def arguments_init() -> Namespace:
         default=40,
         help="Длина гирлянды (кол-во лампочек). По умолчанию: 40"
     )
+    parser.add_argument(
+        "--no-emoji",
+        action="store_true",
+        help="Использовать простые символы вместо эмодзи (для старых терминалов)"
+    )
     return parser.parse_args()
 
 # ------------------  Запуск  ------------------
@@ -234,6 +237,12 @@ def main():
     if args.length < 1:
         print("Ошибка: Длина гирлянды должна быть больше 0!")
         return
+    
+    # Выбор символов для интерфейса на основе флага
+    if args.no_emoji:
+        icon_tree, icon_star = "⍋", "☆"  # icon_tree - Символ APL Delta Stile
+    else:
+        icon_tree, icon_star = "🎄", "🌟"
 
     clear_console()  # Очистка консоли для выделения гирлянды
     init()           # Инициализация colorama
@@ -268,10 +277,10 @@ def main():
                 auto_status = f"{Fore.GREEN}Вкл" if garland.auto_switch else f"{Fore.RED}ВЫКЛ"
 
                 header_str = (
-                    f"{Fore.GREEN}🎄 garland.py 🌟 "
-                    f"{Fore.CYAN}Режим: {mode_name} 🌟 "
-                    f"{Fore.BLUE}Авто: {auto_status} 🌟 "
-                    f"{Fore.WHITE}hotkeys: ENTER, Ctrl+C, A, H 🎄"
+                    f"{Fore.GREEN}{icon_tree} garland.py {icon_star} "
+                    f"{Fore.CYAN}Режим: {mode_name} {icon_star} "
+                    f"{Fore.BLUE}Авто: {auto_status} {icon_star} "
+                    f"{Fore.WHITE}hotkeys: ENTER, Ctrl+C, A, H {icon_tree}"
                 )
             else:
                 # Если заголовок скрыт, то рисуется пустота для сохранения разметки экрана
