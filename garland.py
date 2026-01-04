@@ -240,7 +240,7 @@ def main():
     
     # Выбор символов для интерфейса на основе флага
     if args.no_emoji:
-        icon_tree, icon_star = "↟", "☆"
+        icon_tree, icon_star = "Ѧ", "☆"
     else:
         icon_tree, icon_star = "🎄", "🌟"
 
