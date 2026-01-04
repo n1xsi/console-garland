@@ -75,6 +75,12 @@
     ```bash
     python garland.py --no-emoji
     ```
+    <details>
+      <summary>Пример некорректного отображения</summary>
+      <img src="https://i.imgur.com/GJyhmG2.png">
+    </details>
+
+<br>
 
 > **Примечание для Linux/Mac:**
 > 
