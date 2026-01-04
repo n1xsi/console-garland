@@ -240,7 +240,7 @@ def main():
     
     # Выбор символов для интерфейса на основе флага
     if args.no_emoji:
-        icon_tree, icon_star = "⍋", "☆"  # icon_tree - Символ APL Delta Stile
+        icon_tree, icon_star = "↟", "☆"
     else:
         icon_tree, icon_star = "🎄", "🌟"
 
@@ -277,10 +277,10 @@ def main():
                 auto_status = f"{Fore.GREEN}Вкл" if garland.auto_switch else f"{Fore.RED}ВЫКЛ"
 
                 header_str = (
-                    f"{Fore.GREEN}{icon_tree} garland.py {icon_star} "
-                    f"{Fore.CYAN}Режим: {mode_name} {icon_star} "
-                    f"{Fore.BLUE}Авто: {auto_status} {icon_star} "
-                    f"{Fore.WHITE}hotkeys: ENTER, Ctrl+C, A, H {icon_tree}"
+                    f"{Fore.GREEN}{icon_tree} garland.py {Fore.YELLOW}{icon_star} "
+                    f"{Fore.CYAN}Режим: {mode_name} {Fore.YELLOW}{icon_star} "
+                    f"{Fore.BLUE}Авто: {auto_status} {Fore.YELLOW}{icon_star} "
+                    f"{Fore.WHITE}hotkeys: ENTER, Ctrl+C, A, H {Fore.GREEN}{icon_tree}"
                 )
             else:
                 # Если заголовок скрыт, то рисуется пустота для сохранения разметки экрана
